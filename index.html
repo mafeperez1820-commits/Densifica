@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153e3b">
+  <meta name="description" content="DENSIFICA: simulador académico de densificación y costos de edificación vertical.">
+  <title>DENSIFICA — Simulador de Edificación Vertical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <section id="welcome" class="welcome">
+    <div class="welcome-grid"></div>
+    <nav class="welcome-nav"><div class="brand-mark">D<span>·</span></div><span class="brand-word">DENSIFICA</span><span class="nav-note">ARQUITECTURA · 2026-II</span></nav>
+    <main class="welcome-content">
+      <div class="eyebrow"><span class="live-dot"></span> LABORATORIO DE DISEÑO PARAMÉTRICO</div>
+      <h1>Diseña en altura.<br><em>Calcula con criterio.</em></h1>
+      <p>Explora cómo la altura, la densidad, la eficiencia espacial y los costos interactúan dentro de un proyecto de edificación vertical.</p>
+      <button id="startBtn" class="btn btn-primary btn-large">Iniciar simulador <span>↗</span></button>
+      <div class="welcome-meta"><span>01 / GEOMETRÍA</span><span>02 / VOLUMETRÍA</span><span>03 / COSTOS</span></div>
+    </main>
+    <div class="welcome-building" aria-hidden="true">
+      <div class="building-label label-top">ESTUDIO VOLUMÉTRICO <span>01—05</span></div>
+      <div class="isometric">
+        <div class="iso-roof"></div><div class="iso-floor f5"><b>05</b></div><div class="iso-floor f4"><b>04</b></div><div class="iso-floor f3"><b>03</b></div><div class="iso-floor f2"><b>02</b></div><div class="iso-floor f1"><b>01</b></div>
+        <div class="iso-core"></div>
+      </div>
+      <div class="building-label label-bottom">VOLUMEN / MÓDULO <span>1:100</span></div>
+      <div class="axis axis-x">X</div><div class="axis axis-y">Y</div><div class="axis axis-z">Z ↑</div>
+    </div>
+    <footer class="welcome-footer"><span>DENSIFICA © 2026</span><span>SIMULADOR ACADÉMICO DE ÁLGEBRA Y GEOMETRÍA ANALÍTICA</span></footer>
+  </section>
+
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Densifica inicio"><div class="brand-mark">D<span>·</span></div><strong>DENSIFICA</strong></a>
+      <div class="header-divider"></div><div class="header-subtitle">Simulador de Densificación y Costos de Edificación Vertical</div>
+      <div class="top-actions"><span class="project-status"><i></i> Proyecto activo</span><button id="demoBtn" class="btn btn-ghost">↗ <span>Cargar ejemplo</span></button><button id="resetBtn" class="btn btn-dark">↺ <span>Reiniciar</span></button></div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div class="section-heading">CONFIGURACIÓN DEL PROYECTO <span>01</span></div>
+        <section class="side-section">
+          <div class="section-label">LOTE <span class="line"></span></div>
+          <div class="field-grid">
+            <label>Ancho del lote (m)<input id="lotWidth" type="number" min="1" max="500" step="0.5" value="20"></label>
+            <label>Largo del lote (m)<input id="lotLength" type="number" min="1" max="500" step="0.5" value="30"></label>
+          </div>
+          <div class="lot-area"><span>Área del lote</span><strong id="lotArea">600.00 m²</strong></div>
+        </section>
+        <section class="side-section">
+          <div class="section-label">NIVELES DEL EDIFICIO <span id="levelCountLabel" class="count-pill">04</span></div>
+          <button id="addLevelBtn" class="btn btn-accent add-level">＋ Agregar nivel</button>
+          <div id="levelsList" class="levels-list"></div>
+          <p class="micro-note">Selecciona un nivel para editar sus parámetros. Máximo 20 niveles.</p>
+        </section>
+        <section class="side-section">
+          <div class="section-label">VALORES DE CONSTRUCCIÓN <small>por m²</small></div>
+          <label class="rate-row"><span class="rate-dot commercial"></span><span>Comercial</span><input id="rate-commercial" type="number" min="0" step="50000" value="2500000"></label>
+          <label class="rate-row"><span class="rate-dot office"></span><span>Oficinas</span><input id="rate-office" type="number" min="0" step="50000" value="2000000"></label>
+          <label class="rate-row"><span class="rate-dot residential"></span><span>Residencial</span><input id="rate-residential" type="number" min="0" step="50000" value="1800000"></label>
+          <p class="micro-note">Valores referenciales y editables; no representan cotizaciones oficiales.</p>
+        </section>
+        <section class="side-section">
+          <div class="section-label">COSTOS FIJOS <span class="line"></span></div>
+          <label class="wide-field"><span>Costos fijos del proyecto ($)</span><input id="fixedCosts" type="number" min="0" step="100000" value="50000000"></label>
+        </section>
+      </aside>
+
+      <section class="center-column">
+        <div class="viewer-card">
+          <div class="viewer-topline"><div><span class="eyebrow-small">MODELO PARAMÉTRICO</span><h2>Volumetría del proyecto</h2></div><div class="view-state"><span class="live-dot"></span> VISTA EN TIEMPO REAL</div></div>
+          <div id="viewer" class="viewer">
+            <div class="viewer-loading" id="viewerLoading"><span class="spinner"></span><span>Preparando modelo 3D…</span></div>
+            <div class="axis-widget"><span class="axis-z2">Z</span><span class="axis-cube">◇</span><span class="axis-x2">X</span><span class="axis-y2">Y</span></div>
+            <div id="floorTooltip" class="floor-tooltip hidden"></div>
+            <div class="viewer-controls"><button id="zoomIn" title="Acercar" aria-label="Acercar">＋</button><button id="zoomOut" title="Alejar" aria-label="Alejar">−</button><button id="resetView" title="Restablecer vista" aria-label="Restablecer vista">⟳</button></div>
+            <div class="viewer-bottom-controls"><button id="perspectiveBtn" class="view-toggle active">Perspectiva</button><button id="orthoBtn" class="view-toggle">Ortográfica</button><label class="grid-toggle"><input id="gridToggle" type="checkbox" checked><span class="switch"></span> Mostrar cuadrícula</label></div>
+            <div class="viewer-caption"><span id="modelLevels">04 NIVELES</span><span>ARRASTRA PARA ROTAR · RUEDA PARA ZOOM</span></div>
+          </div>
+          <div class="viewer-foot"><span><b class="legend-square core-legend"></b>Núcleo de circulación</span><span><b class="legend-square floor-legend"></b>Niveles habitables</span><span id="selectedFloorLabel">Nivel seleccionado: 04</span></div>
+        </div>
+        <div class="charts-grid">
+          <article class="chart-card"><div class="chart-title"><h3>Crecimiento de costos</h3><span>Acumulado</span></div><div id="costChart" class="chart-area"></div><div class="chart-foot"><span>● Costo acumulado</span><span>Por número de niveles</span></div></article>
+          <article class="chart-card"><div class="chart-title"><h3>Área útil vs. núcleo</h3><span>m²</span></div><div id="areaChart" class="chart-area"></div><div class="chart-foot"><span>■ Área útil</span><span>■ Núcleo</span></div></article>
+          <article class="chart-card"><div class="chart-title"><h3>Altura acumulada</h3><span>Metros</span></div><div id="heightChart" class="chart-area"></div><div class="chart-foot"><span>● Altura por nivel</span><span>Acumulada</span></div></article>
+        </div>
+      </section>
+
+      <aside class="insights">
+        <div class="section-heading">RESUMEN DEL PROYECTO <span>02</span></div>
+        <div class="height-highlight"><div class="metric-icon">↟</div><div><span>Altura total</span><strong id="heightMetric">11.85 <small>m</small></strong></div><div class="height-equation" id="heightEquation">H = 3.25 + 3.00 + 2.80 + 2.80</div></div>
+        <div class="metrics-grid">
+          <div class="metric-card"><span>▱ Niveles</span><strong id="levelsMetric">4</strong></div>
+          <div class="metric-card"><span>▤ Área construida</span><strong id="builtMetric">2.400,00 <small>m²</small></strong></div>
+          <div class="metric-card"><span>▧ Área útil</span><strong id="usableMetric">2.057,60 <small>m²</small></strong></div>
+          <div class="metric-card"><span>⬡ Volumen</span><strong id="volumeMetric">7.110,00 <small>m³</small></strong></div>
+          <div class="metric-card"><span>▣ Núcleo</span><strong id="coreMetric">342,40 <small>m²</small></strong></div>
+          <div class="metric-card"><span>＄ Presupuesto estimado</span><strong id="budgetMetric">$ 4.850.000.000</strong></div>
+        </div>
+        <section class="budget-section"><div class="section-label">DETALLE DEL PRESUPUESTO <span class="line"></span></div><div class="budget-row"><span>Área construida</span><strong id="budgetArea">2.400,00 m²</strong></div><div class="budget-row"><span>Costo promedio por m²</span><strong id="avgCost">$ 2.000.000</strong></div><div class="budget-row"><span>Costos fijos</span><strong id="fixedDisplay">$ 50.000.000</strong></div><div class="budget-total"><span>Total estimado</span><strong id="budgetTotal">$ 4.850.000.000</strong></div></section>
+        <section class="equations"><div class="section-label">ECUACIONES UTILIZADAS <span class="line"></span></div><div class="equation-row"><span class="eq-number">01</span><span>Decimales <small>(altura total)</small></span><i>H = Σ hᵢ</i></div><div class="equation-row"><span class="eq-number">02</span><span>Ecuación lineal <small>(presupuesto)</small></span><i>C = A × V + C₀</i></div><div class="equation-row"><span class="eq-number">03</span><span>Ecuación cuadrática <small>(núcleo)</small></span><i>A(x) = −x² + bx</i></div></section>
+        <section class="math-section"><div class="section-heading">MATEMÁTICA DEL PROYECTO <span>03</span></div><div class="math-cards">
+          <article><span class="math-index">01</span><h4>DECIMALES</h4><strong>Altura total</strong><div class="math-formula">H = Σ hᵢ</div><p>La altura total se obtiene sumando las alturas de cada nivel según su uso.</p></article>
+          <article><span class="math-index">02</span><h4>ECUACIÓN LINEAL</h4><strong>Presupuesto</strong><div class="math-formula">C = A × V + C₀</div><p>El costo se calcula por nivel usando el área, el valor por m² y los costos fijos.</p></article>
+          <article><span class="math-index">03</span><h4>ECUACIÓN CUADRÁTICA</h4><strong>Núcleo de circulación</strong><div class="math-formula">A(x) = −x² + bx</div><label class="b-field">Parámetro b <input id="coreB" type="number" min="1" max="20" step="0.5" value="12"></label><p>Modelo académico parametrizable. El resultado se limita a un área físicamente posible por nivel.</p></article>
+        </div></section>
+      </aside>
+    </main>
+    <footer class="app-footer"><span>DENSIFICA <b>·</b> Arquitectura 2026-II</span><span>Simulador académico de Álgebra y Geometría Analítica aplicada a la arquitectura.</span></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
